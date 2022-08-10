@@ -12,13 +12,10 @@ import java.util.Scanner;
 public class App {
 
 	public void run() {
-
 		Scanner sc = new Scanner(System.in);
 
-		int lastArticleId = 0;
-
 		while (true) {
-			System.out.printf("명령어 : ");
+			System.out.printf("명령어) ");
 			String cmd = sc.nextLine().trim();
 
 			// DB 연결
@@ -26,27 +23,27 @@ public class App {
 
 			try {
 				Class.forName("com.mysql.jdbc.Driver");
-//				System.out.println("연결 성공!");
+
 			} catch (ClassNotFoundException e) {
-				System.out.println("!! 예외 : MySql 드라이버 클래스가 없습니다. !!");
-				System.out.println("프로그램을 종료합니다 :(");
+				System.out.println("예외 : 클래스가 없습니다.");
+				System.out.println("프로그램을 종료합니다.");
 				break;
 			}
 
 			String url = "jdbc:mysql://127.0.0.1:3306/article_manager?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul&useOldAliasMetadataBehavior=true&zeroDateTimeNehavior=convertToNull";
 
-			// DB 존재
 			try {
 				conn = DriverManager.getConnection(url, "root", "");
 
 				int actionResult = doAction(conn, sc, cmd);
 
 				if (actionResult == -1) {
-					System.out.println(" == 종료합니다. == ");
 					break;
 				}
+
 			} catch (SQLException e) {
-				System.out.println("*** 에러 **** : " + e);
+				System.out.println("@@@@에러@@@@: " + e);
+				break;
 			} finally {
 				try {
 					if (conn != null && !conn.isClosed()) {
@@ -55,64 +52,41 @@ public class App {
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
-				try {
-					if (pstmt != null && !pstmt.isClosed()) {
-						pstmt.close();
-					}
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
 			}
 
 		}
-
 	}
 
 	private int doAction(Connection conn, Scanner sc, String cmd) {
 
-		if (cmd.equals("article write")) {
-			System.out.println("< 게시물 작성 >");
-			int id = lastArticleId + 1;
-			System.out.printf("제목 : ");
-			String title = sc.nextLine();
-			System.out.printf("내용 : ");
-			String body = sc.nextLine();
+		int lastArticleId = 0;
 
-			Article article = new Article(id, title, body);
+		if (cmd.equals("article write")) {
+			System.out.println("<게시물 작성 >");
+			int id = lastArticleId + 1;
+			System.out.printf("* 제목 : ");
+			String title = sc.nextLine();
+			System.out.printf("* 내용 : ");
+			String body = sc.nextLine();
 
 			PreparedStatement pstmt = null;
 
 			try {
-				Class.forName("com.mysql.jdbc.Driver");
-				String url = "jdbc:mysql://127.0.0.1:3306/article_manager?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul&useOldAliasMetadataBehavior=true&zeroDateTimeNehavior=convertToNull";
-
-				conn = DriverManager.getConnection(url, "root", "");
-				System.out.println("연결 성공!");
-
 				String sql = "INSERT INTO article";
 				sql += " SET regDate = NOW()";
 				sql += ", updateDate = NOW()";
-				sql += ", title = ('" + title + "')";
-				sql += ", `body` = ('" + body + "')";
+				sql += ", title = '" + title + "'";
+				sql += ", `body` = '" + body + "'";
 
 				System.out.println(sql);
 
 				pstmt = conn.prepareStatement(sql);
 
-				int affectedRows = pstmt.executeUpdate();
-
-				System.out.println("affectedRows : " + affectedRows);
+				pstmt.executeUpdate();
 
 			} catch (SQLException e) {
-				System.out.println("에러: " + e);
+				System.out.println("**** 에러 **** : " + e);
 			} finally {
-				try {
-					if (conn != null && !conn.isClosed()) {
-						conn.close();
-					}
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
 				try {
 					if (pstmt != null && !pstmt.isClosed()) {
 						pstmt.close();
@@ -122,26 +96,55 @@ public class App {
 				}
 			}
 
-			System.out.println(article);
+			lastArticleId++;
 
-		}
-		// article list
-		else if (cmd.equals("article list")) {
-			System.out.println("< 게시물 목록 >");
-			Connection conn = null;
+		} else if (cmd.startsWith("article modify ")) {
+			int id = Integer.parseInt(cmd.split(" ")[2]);
+
+			System.out.printf("< %d번 게시물 수정 > \n", id);
+			System.out.printf("새로운 제목 : ");
+			String title = sc.nextLine();
+			System.out.printf("새로운 내용 : ");
+			String body = sc.nextLine();
+
+			PreparedStatement pstmt = null;
+
+			try {
+				String sql = "UPDATE article";
+				sql += " SET updateDate = NOW()";
+				sql += ", title = '" + title + "'";
+				sql += ", `body` = '" + body + "'";
+				sql += " WHERE id = " + id;
+
+				System.out.println(sql);
+
+				pstmt = conn.prepareStatement(sql);
+
+				pstmt.executeUpdate();
+
+			} catch (SQLException e) {
+				System.out.println("에러: " + e);
+			} finally {
+				try {
+					if (pstmt != null && !pstmt.isClosed()) {
+						pstmt.close();
+					}
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			System.out.printf("!! %d번 게시물 수정이 완료되었습니다 :) !!\n", id);
+
+		} else if (cmd.equals("article list")) {
+
+			System.out.println("< 게시물 리스트 >");
 			PreparedStatement pstmt = null;
 			ResultSet rs = null;
 
 			List<Article> articles = new ArrayList<>();
 
 			try {
-				Class.forName("com.mysql.jdbc.Driver");
-				String url = "jdbc:mysql://127.0.0.1:3306/article_manager?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul&useOldAliasMetadataBehavior=true&zeroDateTimeNehavior=convertToNull";
-
-				conn = DriverManager.getConnection(url, "root", "");
-				System.out.println("연결 성공 !!");
-
-				String sql = "SELECT * ";
+				String sql = "SELECT *";
 				sql += " FROM article";
 				sql += " ORDER BY id DESC";
 
@@ -158,13 +161,9 @@ public class App {
 					String body = rs.getString("body");
 
 					Article article = new Article(id, regDate, updateDate, title, body);
-
 					articles.add(article);
-
 				}
 
-			} catch (ClassNotFoundException e) {
-				System.out.println("드라이버 로딩 실패");
 			} catch (SQLException e) {
 				System.out.println("에러: " + e);
 			} finally {
@@ -182,82 +181,27 @@ public class App {
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
-				try {
-					if (conn != null && !conn.isClosed()) {
-						conn.close();
-					}
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
+
 			}
-			// 게시물 없는 경우
+
 			if (articles.size() == 0) {
-				System.out.println("게시물이 없습니다. :( ");
-				continue;
+				System.out.println("등록된 게시물이 존재하지 않습니다. :(");
+				return 0;
 			}
-			System.out.println(" [ 번호 / 제목 / 게시날짜 ] ");
 
-			for (int i = articles.size() - 1; i >= 0; i--) {
-				Article article = articles.get(i);
-				System.out.printf("번호 : %d | 제목 : %s | 날짜 : %s \n", article.id, article.title, article.regDate);
+			System.out.println("< 번호  /  제목 >");
+
+			for (Article article : articles) {
+				System.out.printf("%d  /  %s\n", article.id, article.title);
 			}
 
 		}
-		// 게시물 수정
-		else if (cmd.startsWith("article modify ")) {
-			int id = Integer.parseInt(cmd.split(" ")[2]);
-			System.out.printf("< %d번 게시물 수정 > \n", id);
-			System.out.printf("새로운 제목 : ");
-			String title = sc.nextLine();
-			System.out.printf("새로운 내용 : ");
-			String body = sc.nextLine();
 
-			System.out.printf("%d번 게시물 수정이 완료 되었습니다 ! :) \n", id);
-
-			Connection conn = null;
-			PreparedStatement pstmt = null;
-
-			try {
-				Class.forName("com.mysql.jdbc.Driver");
-				String url = "jdbc:mysql://127.0.0.1:3306/article_manager?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul&useOldAliasMetadataBehavior=true&zeroDateTimeNehavior=convertToNull";
-
-				conn = DriverManager.getConnection(url, "root", "");
-				System.out.println("연결 성공!");
-
-				String sql = "UPDATE article";
-				sql += " SET updateDate = NOW()";
-				sql += ", updateDate = NOW()";
-				sql += ", title = ('" + title + "')";
-				sql += ", `body` = ('" + body + "')";
-				sql += " WHERE id = " + id;
-
-				System.out.println(sql);
-
-				pstmt = conn.prepareStatement(sql);
-
-				int affectedRows = pstmt.executeUpdate();
-
-			} catch (ClassNotFoundException e) {
-				System.out.println("드라이버 로딩 실패");
-			} catch (SQLException e) {
-				System.out.println("에러: " + e);
-			} finally {
-				try {
-					if (conn != null && !conn.isClosed()) {
-						conn.close();
-					}
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-				try {
-					if (pstmt != null && !pstmt.isClosed()) {
-						pstmt.close();
-					}
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
+		if (cmd.equals("exit")) {
+			System.out.println("!! 프로그램을 종료합니다 !!");
+			return -1;
 		}
+		return 0;
 	}
 
 }
