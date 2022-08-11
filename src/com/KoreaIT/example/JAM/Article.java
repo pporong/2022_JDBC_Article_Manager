@@ -1,5 +1,7 @@
 package com.KoreaIT.example.JAM;
 
+import java.util.Map;
+
 public class Article extends Object {
 	public int id;
 	public String regDate;
@@ -19,6 +21,12 @@ public class Article extends Object {
 		this.updateDate = updateDate;
 		this.title = title;
 		this.body = body;
+	}
+
+	public Article(Map <String, Object> articleMap) {
+		this.id = (int) articleMap.get("id");
+		this.title = (String) articleMap.get("title");
+		this.body = (String) articleMap.get("body");
 	}
 
 	@Override

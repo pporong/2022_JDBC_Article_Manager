@@ -7,7 +7,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
+
+import com.KoreaIT.example.JAM.util.DBUtil;
+import com.KoreaIT.example.JAM.util.SecSql;
 
 public class App {
 
@@ -59,44 +63,25 @@ public class App {
 
 	private int doAction(Connection conn, Scanner sc, String cmd) {
 
-		int lastArticleId = 0;
-
+		// 게시물 작성
 		if (cmd.equals("article write")) {
 			System.out.println("< 게시물 작성 >");
-			int id = lastArticleId + 1;
 			System.out.printf("* 제목 : ");
 			String title = sc.nextLine();
 			System.out.printf("* 내용 : ");
 			String body = sc.nextLine();
-
-			PreparedStatement pstmt = null;
-
-			try {
-				String sql = "INSERT INTO article";
-				sql += " SET regDate = NOW()";
-				sql += ", updateDate = NOW()";
-				sql += ", title = '" + title + "'";
-				sql += ", `body` = '" + body + "'";
-
-				System.out.println(sql);
-
-				pstmt = conn.prepareStatement(sql);
-
-				pstmt.executeUpdate();
-
-			} catch (SQLException e) {
-				System.out.println("@@@ 에러 @@@ : " + e);
-			} finally {
-				try {
-					if (pstmt != null && !pstmt.isClosed()) {
-						pstmt.close();
-					}
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-
-			lastArticleId++;
+			
+			SecSql sql = new SecSql();
+			
+			sql.append("INSERT INTO article");
+			sql.append(" SET regDate = NOW()");
+			sql.append(", updateDate = NOW()");
+			sql.append(", title = ?", title);
+			sql.append(", `body` = ?", body);
+			
+			int id = DBUtil.insert(conn, sql);
+			
+			System.out.printf("%d번 게시물 작성이 완료되었습니다. :) \n", id);
 
 		} // 게시물 수정
 		else if (cmd.startsWith("article modify ")) {
@@ -108,32 +93,16 @@ public class App {
 			System.out.printf("* 새로운 내용 : ");
 			String body = sc.nextLine();
 
-			PreparedStatement pstmt = null;
-
-			try {
-				String sql = "UPDATE article";
-				sql += " SET updateDate = NOW()";
-				sql += ", title = '" + title + "'";
-				sql += ", `body` = '" + body + "'";
-				sql += " WHERE id = " + id;
-
-				System.out.println(sql);
-
-				pstmt = conn.prepareStatement(sql);
-
-				pstmt.executeUpdate();
-
-			} catch (SQLException e) {
-				System.out.println(" 수정 명령어 에러 : " + e);
-			} finally {
-				try {
-					if (pstmt != null && !pstmt.isClosed()) {
-						pstmt.close();
-					}
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
+			SecSql sql = new SecSql();
+			
+			sql.append("UPDATE article");
+			sql.append(" SET updateDate = NOW()");
+			sql.append(", title = ?", title);
+			sql.append(", `body` = ?", body);
+			sql.append("WHERE id = ? ", id);
+			
+			DBUtil.update(conn, sql);
+			
 			System.out.printf("!! %d번 게시물 수정이 완료되었습니다 :) !!\n", id);
 
 		} // 게시물 목록
@@ -144,53 +113,25 @@ public class App {
 			ResultSet rs = null;
 
 			List<Article> articles = new ArrayList<>();
-
-			try {
-				String sql = "SELECT *";
-				sql += " FROM article";
-				sql += " ORDER BY id DESC";
-
-				System.out.println(sql);
-
-				pstmt = conn.prepareStatement(sql);
-				rs = pstmt.executeQuery();
-
-				while (rs.next()) {
-					int id = rs.getInt("id");
-					String regDate = rs.getString("regDate");
-					String updateDate = rs.getString("updateDate");
-					String title = rs.getString("title");
-					String body = rs.getString("body");
-
-					Article article = new Article(id, regDate, updateDate, title, body);
-					articles.add(article);
-				}
-
-			} catch (SQLException e) {
-				System.out.println("명령어 목록 에러: " + e);
-			} finally {
-				try {
-					if (rs != null && !rs.isClosed()) {
-						rs.close();
-					}
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-				try {
-					if (pstmt != null && !pstmt.isClosed()) {
-						pstmt.close();
-					}
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-
+			
+			SecSql sql = new SecSql();
+			
+			sql.append("SELECT *");
+			sql.append("FROM article");
+			sql.append("ORDER BY id DESC");
+			
+			List<Map <String,Object> > articlesListMap = DBUtil.selectRows(conn, sql);
+			
+			for (Map <String, Object> articleMap : articlesListMap) {
+				articles.add(new Article(articleMap));
 			}
+
 			if (articles.size() == 0) {
 				System.out.println("등록된 게시물이 존재하지 않습니다. :(");
 				return 0;
 			}
 
-			System.out.println(" [ 번호 | 제목 | 게시날짜 ] ");
+			System.out.println("== 번 호 | 제 목 | 게 시 날 짜 ==");
 
 			for (Article article : articles) {
 				System.out.printf("번호 : %d | 제목 : %s | 날짜 : %s \n", article.id, article.title, article.regDate);
