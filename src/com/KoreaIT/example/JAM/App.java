@@ -15,7 +15,7 @@ public class App {
 		Scanner sc = new Scanner(System.in);
 
 		while (true) {
-			System.out.printf("명령어) ");
+			System.out.printf("★ 명령어 : ");
 			String cmd = sc.nextLine().trim();
 
 			// DB 연결
@@ -25,8 +25,8 @@ public class App {
 				Class.forName("com.mysql.jdbc.Driver");
 
 			} catch (ClassNotFoundException e) {
-				System.out.println("예외 : 클래스가 없습니다.");
-				System.out.println("프로그램을 종료합니다.");
+				System.out.println("!! 예외 : MySql 드라이버 클래스가 없습니다. !!");
+				System.out.println("프로그램을 종료합니다. :(");
 				break;
 			}
 
@@ -42,7 +42,7 @@ public class App {
 				}
 
 			} catch (SQLException e) {
-				System.out.println("@@@@에러@@@@: " + e);
+				System.out.println("**** 에러 ****: " + e);
 				break;
 			} finally {
 				try {
@@ -62,7 +62,7 @@ public class App {
 		int lastArticleId = 0;
 
 		if (cmd.equals("article write")) {
-			System.out.println("<게시물 작성 >");
+			System.out.println("< 게시물 작성 >");
 			int id = lastArticleId + 1;
 			System.out.printf("* 제목 : ");
 			String title = sc.nextLine();
@@ -85,7 +85,7 @@ public class App {
 				pstmt.executeUpdate();
 
 			} catch (SQLException e) {
-				System.out.println("**** 에러 **** : " + e);
+				System.out.println("@@@ 에러 @@@ : " + e);
 			} finally {
 				try {
 					if (pstmt != null && !pstmt.isClosed()) {
@@ -98,13 +98,14 @@ public class App {
 
 			lastArticleId++;
 
-		} else if (cmd.startsWith("article modify ")) {
+		} // 게시물 수정
+		else if (cmd.startsWith("article modify ")) {
 			int id = Integer.parseInt(cmd.split(" ")[2]);
 
 			System.out.printf("< %d번 게시물 수정 > \n", id);
-			System.out.printf("새로운 제목 : ");
+			System.out.printf("* 새로운 제목 : ");
 			String title = sc.nextLine();
-			System.out.printf("새로운 내용 : ");
+			System.out.printf("* 새로운 내용 : ");
 			String body = sc.nextLine();
 
 			PreparedStatement pstmt = null;
@@ -123,7 +124,7 @@ public class App {
 				pstmt.executeUpdate();
 
 			} catch (SQLException e) {
-				System.out.println("에러: " + e);
+				System.out.println(" 수정 명령어 에러 : " + e);
 			} finally {
 				try {
 					if (pstmt != null && !pstmt.isClosed()) {
@@ -135,9 +136,10 @@ public class App {
 			}
 			System.out.printf("!! %d번 게시물 수정이 완료되었습니다 :) !!\n", id);
 
-		} else if (cmd.equals("article list")) {
+		} // 게시물 목록
+		else if (cmd.equals("article list")) {
 
-			System.out.println("< 게시물 리스트 >");
+			System.out.println("< 게시물 목록 >");
 			PreparedStatement pstmt = null;
 			ResultSet rs = null;
 
@@ -165,7 +167,7 @@ public class App {
 				}
 
 			} catch (SQLException e) {
-				System.out.println("에러: " + e);
+				System.out.println("명령어 목록 에러: " + e);
 			} finally {
 				try {
 					if (rs != null && !rs.isClosed()) {
@@ -183,16 +185,15 @@ public class App {
 				}
 
 			}
-
 			if (articles.size() == 0) {
 				System.out.println("등록된 게시물이 존재하지 않습니다. :(");
 				return 0;
 			}
 
-			System.out.println("< 번호  /  제목 >");
+			System.out.println(" [ 번호 | 제목 | 게시날짜 ] ");
 
 			for (Article article : articles) {
-				System.out.printf("%d  /  %s\n", article.id, article.title);
+				System.out.printf("번호 : %d | 제목 : %s | 날짜 : %s \n", article.id, article.title, article.regDate);
 			}
 
 		}
