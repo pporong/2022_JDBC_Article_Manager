@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,18 +35,18 @@ public class JDBCSelectTEST {
 			pstmt = conn.prepareStatement(sql);
 			rs = pstmt.executeQuery();
 
-			while (rs.next()) {
-				int id = rs.getInt("id");
-				String regDate = rs.getString("regDate");
-				String updateDate = rs.getString("updateDate");
-				String title = rs.getString("title");
-				String body = rs.getString("body");
-
-				Article article = new Article(id, regDate, updateDate, title, body);
-
-				articles.add(article);
-			
-			}
+			/*
+			 * while (rs.next()) { int id = rs.getInt("id"); LocalDateTime regDate =
+			 * rs.getString("regDate"); LocalDateTime updateDate =
+			 * rs.getString("updateDate"); String title = rs.getString("title"); String body
+			 * = rs.getString("body");
+			 * 
+			 * Article article = new Article(id, regDate, updateDate, title, body);
+			 * 
+			 * articles.add(article);
+			 * 
+			 * }
+			 */
 
 //			System.out.println("affectedRows : " + affectedRows);
 
