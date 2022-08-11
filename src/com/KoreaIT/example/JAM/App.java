@@ -70,40 +70,18 @@ public class App {
 			String title = sc.nextLine();
 			System.out.printf("* 내용 : ");
 			String body = sc.nextLine();
-			
+
 			SecSql sql = new SecSql();
-			
+
 			sql.append("INSERT INTO article");
 			sql.append(" SET regDate = NOW()");
 			sql.append(", updateDate = NOW()");
 			sql.append(", title = ?", title);
 			sql.append(", `body` = ?", body);
-			
+
 			int id = DBUtil.insert(conn, sql);
-			
+
 			System.out.printf("%d번 게시물 작성이 완료되었습니다. :) \n", id);
-
-		} // 게시물 수정
-		else if (cmd.startsWith("article modify ")) {
-			int id = Integer.parseInt(cmd.split(" ")[2]);
-
-			System.out.printf("< %d번 게시물 수정 > \n", id);
-			System.out.printf("* 새로운 제목 : ");
-			String title = sc.nextLine();
-			System.out.printf("* 새로운 내용 : ");
-			String body = sc.nextLine();
-
-			SecSql sql = new SecSql();
-			
-			sql.append("UPDATE article");
-			sql.append(" SET updateDate = NOW()");
-			sql.append(", title = ?", title);
-			sql.append(", `body` = ?", body);
-			sql.append("WHERE id = ? ", id);
-			
-			DBUtil.update(conn, sql);
-			
-			System.out.printf("!! %d번 게시물 수정이 완료되었습니다 :) !!\n", id);
 
 		} // 게시물 목록
 		else if (cmd.equals("article list")) {
@@ -113,16 +91,16 @@ public class App {
 			ResultSet rs = null;
 
 			List<Article> articles = new ArrayList<>();
-			
+
 			SecSql sql = new SecSql();
-			
+
 			sql.append("SELECT *");
-			sql.append("FROM article");
-			sql.append("ORDER BY id DESC");
-			
-			List<Map <String,Object> > articlesListMap = DBUtil.selectRows(conn, sql);
-			
-			for (Map <String, Object> articleMap : articlesListMap) {
+			sql.append(" FROM article");
+			sql.append(" ORDER BY id DESC");
+
+			List<Map<String, Object>> articlesListMap = DBUtil.selectRows(conn, sql);
+
+			for (Map<String, Object> articleMap : articlesListMap) {
 				articles.add(new Article(articleMap));
 			}
 
@@ -137,8 +115,59 @@ public class App {
 				System.out.printf("번호 : %d | 제목 : %s | 날짜 : %s \n", article.id, article.title, article.regDate);
 			}
 
-		}
+		}  // 게시물 수정
+		else if (cmd.startsWith("article modify ")) {
+			int id = Integer.parseInt(cmd.split(" ")[2]);
 
+			System.out.printf("< %d번 게시물 수정 > \n", id);
+			System.out.printf("* 새로운 제목 : ");
+			String title = sc.nextLine();
+			System.out.printf("* 새로운 내용 : ");
+			String body = sc.nextLine();
+
+			SecSql sql = new SecSql();
+
+			sql.append("UPDATE article");
+			sql.append(" SET updateDate = NOW()");
+			sql.append(", title = ?", title);
+			sql.append(", `body` = ?", body);
+			sql.append("WHERE id = ? ", id);
+
+			DBUtil.update(conn, sql);
+
+			System.out.printf("!! %d번 게시물 수정이 완료되었습니다 :) !!\n", id);
+
+		} // 게시글 삭제
+		else if (cmd.startsWith("article delete ")) {
+			
+			int id = Integer.parseInt(cmd.split(" ")[2]);
+
+			System.out.printf("< %d번 게시물 삭제 > \n", id);
+			
+			SecSql sql = new SecSql();
+			sql.append("SELECT COUNT(*)");
+			sql.append(" FROM article");
+			sql.append("WHERE id = ? ", id);
+			
+			int articlesCount = DBUtil.selectRowIntValue(conn, sql);
+			if (articlesCount == 0) {
+				System.out.printf("%d번 게시물은 존재하지 않는 게시물입니다. :( \n", id);
+				return 0;
+			}
+			
+			sql = new SecSql();
+			
+			sql.append("DELETE FROM article");
+			sql.append("WHERE id = ? ", id);
+			
+			DBUtil.delete(conn, sql);
+
+			System.out.printf("%d번 게시물 삭제가 완료되었습니다. :) \n", id);
+	
+		}
+		
+
+		// 프로그램 종료
 		if (cmd.equals("exit")) {
 			System.out.println("!! 프로그램을 종료합니다 !!");
 			return -1;
