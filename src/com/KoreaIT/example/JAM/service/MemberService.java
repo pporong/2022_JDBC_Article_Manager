@@ -1,0 +1,19 @@
+package com.KoreaIT.example.JAM.service;
+
+import java.sql.Connection;
+
+import com.KoreaIT.example.JAM.dao.MemberDao;
+
+public class MemberService {
+	
+	private MemberDao memberDao;
+	
+	public MemberService(Connection conn) {
+		memberDao = new MemberDao(conn);
+	}
+	
+	public boolean isLoginIdDup(String loginId) {
+		return memberDao.isLginIdDup();
+	}
+
+}
