@@ -1,13 +1,5 @@
-````mysql
-```
 DROP DATABASE IF EXISTS article_manager;
 CREATE DATABASE article_manager;
-```
-````
-
-````mysql
-
-```
 
 DROP DATABASE IF EXISTS article_manager;
 CREATE DATABASE article_manager;
@@ -29,11 +21,25 @@ title = CONCAT('제목',RAND()),
 `body` = CONCAT('내용',RAND());
 
 SELECT * FROM article;
-```
-```
-String sql ="INSERT INTO article";
-sql += " SET regDate = NOW()";
-sql += ", updateDate = NOW()";
-sql += ", title = CONCAT('제목',RAND())";
-sql += ", `body` = CONCAT('내용',RAND())";
-```
+
+STRING SQL ="INSERT INTO article";
+SQL += " SET regDate = NOW()";
+SQL += ", updateDate = NOW()";
+SQL += ", title = CONCAT('제목',RAND())";
+SQL += ", `body` = CONCAT('내용',RAND())";
+
+SELECT COUNT(*) 
+FROM article
+WHERE id = 9;
+
+CREATE TABLE `member` (
+    id INT(10) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    regDate DATETIME NOT NULL,
+    updateDate DATETIME NOT NULL,
+    loginId CHAR(20) NOT NULL,
+    loginPw CHAR(100) NOT NULL,
+    `name` CHAR(200) NOT NULL
+);
+
+SELECT * FROM `member`;
+DESC `member`;
