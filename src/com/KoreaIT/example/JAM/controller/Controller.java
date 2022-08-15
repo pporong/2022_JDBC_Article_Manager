@@ -8,4 +8,5 @@ public abstract class Controller {
 	public Controller(Scanner sc) {
 		this.sc = sc;
 	}
+
 }

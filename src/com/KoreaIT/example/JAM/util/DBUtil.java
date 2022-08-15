@@ -16,6 +16,7 @@ import com.KoreaIT.example.JAM.exception.SQLErrorException;
 public class DBUtil {
 	public static Map<String, Object> selectRow(Connection dbConn, SecSql sql) {
 		List<Map<String, Object>> rows = selectRows(dbConn, sql);
+//		List<Map<String, Object>> rows = new ArrayList<>();
 
 		if (rows.size() == 0) {
 			return new HashMap<>();
@@ -91,6 +92,8 @@ public class DBUtil {
 	}
 
 	public static String selectRowStringValue(Connection dbConn, SecSql sql) {
+//		dbConn = conn;
+		
 		Map<String, Object> row = selectRow(dbConn, sql);
 
 		for (String key : row.keySet()) {
@@ -120,7 +123,6 @@ public class DBUtil {
 			stmt = sql.getPreparedStatement(dbConn);
 			stmt.executeUpdate();
 			rs = stmt.getGeneratedKeys();
-
 			if (rs.next()) {
 				id = rs.getInt(1);
 			}
