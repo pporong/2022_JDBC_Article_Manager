@@ -18,5 +18,7 @@ public class MemberService {
 	public int doJoin(String loginId, String loginPw, String name) {
 		return memberDao.doJoin(loginId, loginPw, name);
 	}
+	
+	
 
 }

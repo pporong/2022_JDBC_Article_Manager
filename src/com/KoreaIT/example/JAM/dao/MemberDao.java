@@ -36,5 +36,23 @@ public class MemberDao {
 
 		return id;
 	}
+	
+
+//
+//		sql.append("INSERT INTO member");
+//		sql.append(" SET regDate = NOW()");
+//		sql.append(", updateDate = NOW()");
+//		sql.append(", loginId = ?", loginId);
+//		sql.append(", loginPw = ?", loginPw);
+//		sql.append(", `name` = ?", name);
+	
+	public int doLogin(String loginId, String loginPw) {
+		SecSql sql = new SecSql();
+		
+		sql.append("");
+		
+		int id = DBUtil.insert(conn, sql);
+		return id;
+	}
 
 }
