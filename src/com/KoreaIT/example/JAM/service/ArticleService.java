@@ -41,4 +41,9 @@ public class ArticleService {
 		return articleDao.getArticles();
 	}
 
+	public void increasHit(int id) {
+		articleDao.increasHit(id);
+		
+	}
+
 }
