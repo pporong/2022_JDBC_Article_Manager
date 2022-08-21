@@ -1,6 +1,5 @@
 package com.KoreaIT.example.JAM.dao;
 
-import java.sql.Connection;
 import java.util.Map;
 
 import com.KoreaIT.example.JAM.Member;
