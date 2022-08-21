@@ -46,10 +46,10 @@ public class ArticleController extends Controller {
 			return;
 		}
 
-		System.out.println("== 번 호 | 제 목 | 게 시 날 짜 ==");
+		System.out.println("== 번 호 |	작 성 날 짜	|   제  목   | 작 성 자 ==");
 
 		for (Article article : articles) {
-			System.out.printf("번호 : %d | 제목 : %s | 날짜 : %s \n", article.id, article.title, article.regDate);
+			System.out.printf("번호 : %d |  %s  | 제목 : %s | %s \n", article.id, article.regDate, article.title, article.extra__writer);
 		}
 	}
 

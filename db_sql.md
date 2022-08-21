@@ -42,6 +42,38 @@ loginId = 'test2',
 loginPW = 'test2',
 `name` = '최자두';
 
+# 임시 게시글 데이터
+
+INSERT INTO article
+SET regDate = NOW(),
+updateDate = NOW(),
+title = '제목1',
+`body` = '내용1',
+memberId = 1;
+
+INSERT INTO article
+SET regDate = NOW(),
+updateDate = NOW(),
+title = '제목2',
+`body` = '내용2',
+memberId = 1;
+
+INSERT INTO article
+SET regDate = NOW(),
+updateDate = NOW(),
+title = '제목3',
+`body` = '내용3',
+memberId = 2;
+
+INSERT INTO article
+SET regDate = NOW(),
+updateDate = NOW(),
+title = '제목4',
+`body` = '내용4',
+memberId = 2;
+
+SELECT * FROM article;
+SELECT * FROM `member`;
 
 /*
 INSERT INTO article
