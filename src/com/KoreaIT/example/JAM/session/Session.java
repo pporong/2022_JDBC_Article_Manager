@@ -1,5 +1,12 @@
 package com.KoreaIT.example.JAM.session;
 
-public class Session {
+import com.KoreaIT.example.JAM.Member;
 
+public class Session {
+	public int loginedMemberId;
+	public Member loginedMember;
+	
+	public Session() {
+		loginedMemberId = -1;
+	}
 }
