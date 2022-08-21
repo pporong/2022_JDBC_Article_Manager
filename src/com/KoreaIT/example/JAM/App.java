@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Scanner;
 
+import com.KoreaIT.example.JAM.container.Container;
 import com.KoreaIT.example.JAM.controller.ArticleController;
 import com.KoreaIT.example.JAM.controller.MemberController;
 
@@ -12,11 +13,13 @@ import com.KoreaIT.example.JAM.controller.MemberController;
 public class App {
 
 	public void run() {
-		Scanner sc = new Scanner(System.in);
+		Container.sc = new Scanner(System.in);
+		
+		Container.init();
 
 		while (true) {
 			System.out.printf("★ 명령어 : ");
-			String cmd = sc.nextLine().trim();
+			String cmd = Container.sc.nextLine().trim();
 
 			// DB 연결
 			Connection conn = null;
@@ -34,8 +37,10 @@ public class App {
 
 			try {
 				conn = DriverManager.getConnection(url, "root", "");
+				
+				Container.conn = conn;
 
-				int actionResult = action(conn, sc, cmd);
+				int actionResult = action(cmd);
 
 				if (actionResult == -1) {
 					break;
@@ -57,7 +62,7 @@ public class App {
 		}
 	}
 
-	private int action(Connection conn, Scanner sc, String cmd) {
+	private int action(String cmd) {
 
 		// 프로그램 종료
 		if (cmd.equals("exit")) {
@@ -65,8 +70,8 @@ public class App {
 			return -1;
 		}
 		
-		MemberController memberController = new MemberController(conn,sc);
-		ArticleController articleController = new ArticleController(conn,sc);
+		MemberController memberController = Container.memberController;
+		ArticleController articleController = Container.articleController;
 		
 		if (cmd.equals("member join")) {
 			memberController.doJoin(cmd);

@@ -1,19 +1,17 @@
 package com.KoreaIT.example.JAM.controller;
 
-import java.sql.Connection;
 import java.util.List;
-import java.util.Scanner;
 
 import com.KoreaIT.example.JAM.Article;
+import com.KoreaIT.example.JAM.container.Container;
 import com.KoreaIT.example.JAM.service.ArticleService;
 
 public class ArticleController extends Controller {
 	
 	private ArticleService articleService;
 
-	public ArticleController(Connection conn, Scanner sc) {
-		super(sc);
-		articleService = new ArticleService(conn);
+	public ArticleController() {
+		articleService = Container.articleService;
 	}
 
 	// 게시물 작성
