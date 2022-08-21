@@ -43,3 +43,9 @@ CREATE TABLE `member` (
 
 SELECT * FROM `member`;
 DESC `member`;
+
+SELECT COUNT(*) = 0
+FROM `member`
+WHERE loginId = 'aaa1';
+INSERT INTO article  SET regDate = NOW() , updateDate = NOW() , title = '123' , `body = '123';
+# select rand()

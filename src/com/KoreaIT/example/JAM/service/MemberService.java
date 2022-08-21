@@ -2,6 +2,7 @@ package com.KoreaIT.example.JAM.service;
 
 import java.sql.Connection;
 
+import com.KoreaIT.example.JAM.Member;
 import com.KoreaIT.example.JAM.dao.MemberDao;
 
 public class MemberService {
@@ -19,6 +20,9 @@ public class MemberService {
 		return memberDao.doJoin(loginId, loginPw, name);
 	}
 	
-	
+	public Member getMemberByLoginId(String loginId) {
+		return memberDao.getMemberByLoginId(loginId);
+	}
+
 
 }

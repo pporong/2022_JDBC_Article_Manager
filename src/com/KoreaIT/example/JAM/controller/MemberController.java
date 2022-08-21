@@ -15,7 +15,6 @@ public class MemberController extends Controller {
 
 	}
 
-
 	// 회원 가입
 	public void doJoin(String cmd) {
 		String loginId = null;
@@ -44,8 +43,8 @@ public class MemberController extends Controller {
 				continue;
 			}
 
-			boolean isLoginIdDup =  memberService.isLoginIdDup(loginId);
-			
+			boolean isLoginIdDup = memberService.isLoginIdDup(loginId);
+
 			if (isLoginIdDup) {
 				System.out.printf("!! %s 는(은) 이미 사용중인 아이디 입니다. !!", loginId);
 				continue;
@@ -87,15 +86,6 @@ public class MemberController extends Controller {
 				break;
 			}
 		}
-//
-//		SecSql sql = new SecSql();
-//
-//		sql.append("INSERT INTO member");
-//		sql.append(" SET regDate = NOW()");
-//		sql.append(", updateDate = NOW()");
-//		sql.append(", loginId = ?", loginId);
-//		sql.append(", loginPw = ?", loginPw);
-//		sql.append(", `name` = ?", name);
 
 		int id = memberService.doJoin(loginId, loginPw, name);
 
@@ -103,59 +93,62 @@ public class MemberController extends Controller {
 
 	}
 
-
+	// 로그인
 	public void doLogin(String cmd) {
-		
+
+		String loginId = null;
+		String loginPw = null;
+
 		System.out.println("< 로그인 >");
-		System.out.printf("★ 아이디 : ");
-		String loginId = sc.nextLine().trim();
-		System.out.printf("★ 비밀번호 : ");
-		String loginPw = sc.nextLine().trim();
 
-		Member member = getMemberByLoginId(loginId);
+		while (true) {
+			// ID 받기
+			System.out.printf("★ 아이디 : ");
+			loginId = sc.nextLine().trim();
+			if (loginId.length() == 0) {
+				System.out.println("!! 아이디가 입력되지 않았습니다. !!");
+				continue;
+			}
 
-		// 사용자에게 입력받은 아이디에 해당하는 회원이 존재하는지?
-		if (member == null) {
-			System.out.println("!! 존재하지 않는 아이디입니다. !!");
-			return;
-		} 
-		// 비밀번호 일치 X
-		if (member.loginPw.equals(loginPw) == false) {
-			System.out.println("!! 비밀번호가 올바르지 않습니다. !!");
-			return;
+			boolean isLoginIdDup = memberService.isLoginIdDup(loginId);
+
+			if (isLoginIdDup == false) {
+				System.out.printf("!! %s는(은) 존재하지 않는 아이디입니다. !! \n", loginId);
+				continue;
+			}
+
+			break;
 		}
 
-		loginedMember = member;
-		System.out.println("반갑습니다 ! " + loginedMember.userName + "님 !");
-//		System.out.printf("%s님! 환영합니다 ! \n", loginId);
-		
+		Member member = memberService.getMemberByLoginId(loginId);
+
+		int tryMaxCount = 3;
+		int tryCount = 0;
+
+		while (true) {
+			if (tryCount >= tryMaxCount) {
+				System.out.println("!! 비밀번호를 확인하고 다시 시도해주세요. !!");
+				break;
+			}
+			// PW 받기
+			System.out.printf("★ 비밀번호 : ");
+			loginPw = sc.nextLine().trim();
+
+			if (loginPw.length() == 0) {
+				tryCount++;
+				System.out.println("!! 비밀번호가 입력되지 않았습니다. !! ");
+				continue;
+			}
+
+			if (member.loginPw.equals(loginPw) == false) {
+				tryCount++;
+				System.out.println("!! 비밀번호가 일치하지 않습니다. !!");
+				continue;
+			}
+			System.out.println("반갑습니다 ! " + member.name + " 님 !");
+			break;
+		}
+
 	}
-	
-	// 회원 정보
-//
-//	public void showProfile(String cmd) {
-//		int id = Integer.parseInt(cmd.split(" ")[2]);
-//
-//		SecSql sql = new SecSql();
-//		sql.append("SELECT *");
-//		sql.append("FROM member");
-//		sql.append("WHERE id = ?", id);
-//
-//		Map<String, Object> memberMap = DBUtil.selectRow(conn, sql);
-//
-//		if (memberMap.isEmpty()) {
-//			System.out.printf("%d번 회원은 존재하지 않습니다. :( \n", id);
-//			return;
-//		}
-//
-//		Member member = new Member(memberMap);
-//
-//		System.out.printf("< %s 회원님 상세 정보 > \n", member.name);
-//		System.out.printf("이    름 : %s \n", member.name);
-//		System.out.printf("번    호 : %d \n", member.id);
-//		System.out.printf("가입 날짜 : %s \n", member.regDate);
-//		System.out.printf("아 이 디 : %s \n", member.loginId);
-//		System.out.printf("비밀 번호 : %s \n", member.loginPw);
-//	}
-	
+
 }

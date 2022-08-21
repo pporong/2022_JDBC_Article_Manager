@@ -3,15 +3,10 @@ package com.KoreaIT.example.JAM;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 
 import com.KoreaIT.example.JAM.controller.ArticleController;
 import com.KoreaIT.example.JAM.controller.MemberController;
-import com.KoreaIT.example.JAM.util.DBUtil;
-import com.KoreaIT.example.JAM.util.SecSql;
 
 
 public class App {
@@ -77,11 +72,7 @@ public class App {
 			memberController.doJoin(cmd);
 		} else if(cmd.equals("member login")) {
 			memberController.doLogin(cmd);
-		}
-//			else if (cmd.equals("member detail ")) {
-//			memberController.showProfile(cmd);
-//		} 
-		  else if (cmd.equals("article write")) {
+		} else if (cmd.equals("article write")) {
 			articleController.doWrite(cmd);
 		} else if (cmd.equals("article list")) {
 			articleController.showList(cmd);
